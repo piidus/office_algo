@@ -1,7 +1,7 @@
 # from selenium import webdriver
 # from selenium.webdriver.chrome.service import Service as ChromeService
 # from webdriver_manager.chrome import ChromeDriverManager
-
+import os
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 
@@ -26,8 +26,8 @@ def login(sleep_time=15):
     driver.maximize_window()
     
     
-    login_id = driver.find_element(By.ID, 'ctl00_ContentPlaceHolder1_txtLogin').send_keys('RAJARHAT')
-    password = driver.find_element(By.ID, 'ctl00_ContentPlaceHolder1_txtPwd').send_keys('mdm12345')
+    login_id = driver.find_element(By.ID, 'ctl00_ContentPlaceHolder1_txtLogin').send_keys(os.environ.get('login_id'))
+    password = driver.find_element(By.ID, 'ctl00_ContentPlaceHolder1_txtPwd').send_keys(os.environ.get('pwd'))
     time.sleep(sleep_time)
 
     # driver.find_element(By.ID, 'ctl00_ContentPlaceHolder1_btnLogin').click()
