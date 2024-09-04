@@ -63,7 +63,7 @@ def set_values(id, value):
     pri_day.send_keys(str(value))
 def find_school(data, sch):
     
-    sch_name =str(data['SCHOOL NAME'])
+    sch_name =str(data['SCHOOL NAME']).split("(")[0]
     
     # start_index = sch_name.find("(")  # Find the index of the opening parenthesis
     # if start_index:
@@ -87,12 +87,13 @@ def find_school(data, sch):
     original_window = driver.current_window_handle
     # click on month
     try:
-        # driver.find_element(By.LINK_TEXT, 'Pending').click()
-        driver.find_element(By.LINK_TEXT, 'Draft').click()
+        driver.find_element(By.LINK_TEXT, 'Pending').click()
+        # driver.find_element(By.LINK_TEXT, 'Draft').click()
         
     except :
         # new_tab = driver.find_element(By.LINK_TEXT, 'Draft').click()
-        driver.find_element(By.LINK_TEXT, 'Pending').click()
+        # driver.find_element(By.LINK_TEXT, 'Pending').click()
+        print('school not found', sch_name)
     finally:
         # time.sleep(3)
         # Wait for the new window or tab
@@ -154,8 +155,16 @@ def find_school(data, sch):
         try:
             # cch_value = int(data['CCH COUNT']) * 1500
             # # driver.find_element(By.ID, 'txtcch_rec' ).send_keys(cch_value)
-            cch = int(driver.find_element(By.ID, 'lblcch_exp').get_attribute('value'))
+            open_bal = float(driver.find_element(By.ID, 'lblcch_ob').get_attribute('value'))
+            current_bal = int(driver.find_element(By.ID, 'lblcch_exp').get_attribute('value'))
+            if open_bal < 0:
+                cch = abs(open_bal) + current_bal
+            elif open_bal > 0:
+                cch = current_bal - open_bal
+            else:
+                cch = current_bal
             set_values('txtcch_rec', cch)
+            time.sleep(3)
             # print(int(data['CCH COUNT'])*1500)
             # set_values('txttexp', data['MME'])
         except Exception as e:
@@ -188,11 +197,20 @@ def find_school(data, sch):
         except Exception as e:
             print('Rice :', e)
 
+        # IFA BOYS AND IFA GIRLS
+        try:
+            set_values('txttablet_ifa_boys', data['IFA BOYS'])
+            set_values('txttablet_ifa_girls', data['IFA GIRLS'])
+            time.sleep(3)
+        except Exception as e:
+            print('ifa :', e)
+
         # iNSPECTION
         # driver.find_element(By.ID, 'rdSchoolInspection_0').click()
         # set_values(id='txtinsp3', value=1)
         
         # driver.find_element(By.ID, 'btnsavedrft').click() # save as draft
+        #SAVE THE DATA
         driver.find_element(By.ID, 'btnfreeze').click()  #Freeze 
         
         alert = WebDriverWait(driver=driver, timeout=3).until(EC.alert_is_present())
@@ -211,7 +229,7 @@ def find_school(data, sch):
 # call the functions
 login()
 monthly_data()
-data = call_the_data(3)
+data = call_the_data(76)
 # one_time = 1
 for index, row in data.iterrows():
     try:
